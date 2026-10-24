@@ -95,6 +95,7 @@ The program has 10 passing tests: 5 for the payout and matching maths, and 5 on-
 
 A full worker story ran on devnet: open vault, employer and family top-ups, two matched savings, three refused attacks, and two monthly payouts to her mother's wallet.
 
+- **Source code:** https://github.com/let-the-dreamers-rise/dala
 - **Demo page with every transaction:** https://claude.ai/artifact/K5MKNQSXZw5z9Qc3AEYaSd (share it from the page's Share menu first)
 - **Program:** https://explorer.solana.com/address/J4NigtmbyxjPXkrLz77ZFpkQ3JXfVuBpzEyYWuGykoMY?cluster=devnet
 - **Maria's vault:** https://explorer.solana.com/address/ZGsTYQvDKvCJ8dBXcBUKU7PkHmaUmGnHmYBFZFGLwf5?cluster=devnet

@@ -3,6 +3,7 @@
 A portable, worker-owned stablecoin pension vault for migrant workers, built on Solana.
 Submission for the SMU "From Vision to Impact: Building Web3 for Social Good 2026" hackathon (Idea Track).
 
+- Repository: https://github.com/let-the-dreamers-rise/dala
 - Submission text: [SUBMISSION.md](SUBMISSION.md)
 - Program (devnet): `J4NigtmbyxjPXkrLz77ZFpkQ3JXfVuBpzEyYWuGykoMY`
 - Demo run with every transaction: [app/demo.json](app/demo.json), rendered by [app/index.html](app/index.html)
