@@ -1,2 +1,4 @@
 template.html
 build-page.mjs
+scripts/
+.env*

@@ -1,0 +1,17 @@
+{
+  "name": "dala-web",
+  "private": true,
+  "type": "module",
+  "engines": { "node": "22.x" },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "story": "node build-page.mjs"
+  },
+  "overrides": {
+    "rpc-websockets": "9.3.0"
+  },
+  "dependencies": {
+    "@solana/spl-token": "0.4.9",
+    "@solana/web3.js": "1.98.0"
+  }
+}

@@ -1,0 +1,81 @@
+/* Dala design tokens. Metaphor: a thread that carries value across borders.
+   Teal is the thread, gold is the sun of home, ink is the night shift. */
+:root {
+  --bg: #f2f4f6;
+  --paper: #ffffff;
+  --ink: #15233a;
+  --muted: #566176;
+  --line: #d9dee6;
+  --accent: #0d6b66;
+  --accent-ink: #ffffff;
+  --accent-soft: #dcefed;
+  --sun: #c98d00;
+  --own: #0d6b66;
+  --match: #3fa79c;
+  --employer: #d99a00;
+  --family: #8c6bb1;
+  --ok: #1f7a3d;
+  --block: #b3261e;
+  --block-soft: #f8e3e1;
+  --f-display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --ease-thread: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-fast: 180ms;
+  --t-med: 420ms;
+  --t-slow: 900ms;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d131d; --paper: #151d2a; --ink: #e5e9ef; --muted: #9aa5b5; --line: #2a3546;
+    --accent: #4cc3b5; --accent-ink: #062523; --accent-soft: #173431; --sun: #f2c14e;
+    --own: #4cc3b5; --match: #2c8a80; --employer: #f2c14e; --family: #b59ad6;
+    --ok: #6fcf8b; --block: #f2867d; --block-soft: #3a1f1d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d131d; --paper: #151d2a; --ink: #e5e9ef; --muted: #9aa5b5; --line: #2a3546;
+  --accent: #4cc3b5; --accent-ink: #062523; --accent-soft: #173431; --sun: #f2c14e;
+  --own: #4cc3b5; --match: #2c8a80; --employer: #f2c14e; --family: #b59ad6;
+  --ok: #6fcf8b; --block: #f2867d; --block-soft: #3a1f1d;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 1rem/1.6 var(--f-body);
+}
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+p { margin: 0; }
+a { color: var(--accent); }
+img, svg { max-width: 100%; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.eyebrow { font: 500 0.75rem/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.mono { font-family: var(--f-mono); font-size: 0.85rem; overflow-wrap: anywhere; }
+.num { font-variant-numeric: tabular-nums; }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  font: 600 0.95rem/1 var(--f-body); padding: 0.85rem 1.2rem; border-radius: 999px;
+  border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink);
+  cursor: pointer; text-decoration: none;
+  transition: transform var(--t-fast) var(--ease-settle), background var(--t-fast), box-shadow var(--t-fast);
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px -8px var(--accent); }
+.btn:active { transform: translateY(0); }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn.quiet { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn[disabled] { opacity: 0.55; cursor: progress; transform: none; box-shadow: none; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
+}

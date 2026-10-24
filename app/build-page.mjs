@@ -13,5 +13,5 @@ if (missing.length) throw new Error(`demo.json is missing: ${missing.join(", ")}
 // Escape "<" so no string in the data can close the script tag.
 const json = JSON.stringify(data).replace(/</g, "\\u003c");
 const template = fs.readFileSync(path.join(dir, "template.html"), "utf8");
-fs.writeFileSync(path.join(dir, "index.html"), template.replace("__DEMO_JSON__", () => json));
-console.log(`wrote app/index.html with ${data.steps.length} steps for vault ${data.vault}`);
+fs.writeFileSync(path.join(dir, "story.html"), template.replace("__DEMO_JSON__", () => json));
+console.log(`wrote app/story.html with ${data.steps.length} steps for vault ${data.vault}`);

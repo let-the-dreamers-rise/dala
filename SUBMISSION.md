@@ -96,7 +96,8 @@ The program has 10 passing tests: 5 for the payout and matching maths, and 5 on-
 A full worker story ran on devnet: open vault, employer and family top-ups, two matched savings, three refused attacks, and two monthly payouts to her mother's wallet.
 
 - **Source code:** https://github.com/let-the-dreamers-rise/dala
-- **Live demo with every transaction:** https://dala-puce.vercel.app
+- **Try it yourself (passkey sign-in, no SOL needed):** https://dala-puce.vercel.app/app.html
+- **Recorded run with every transaction:** https://dala-puce.vercel.app/story.html
 - **Program:** https://explorer.solana.com/address/J4NigtmbyxjPXkrLz77ZFpkQ3JXfVuBpzEyYWuGykoMY?cluster=devnet
 - **Maria's vault:** https://explorer.solana.com/address/ZGsTYQvDKvCJ8dBXcBUKU7PkHmaUmGnHmYBFZFGLwf5?cluster=devnet
 
