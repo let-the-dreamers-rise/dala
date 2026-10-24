@@ -1,0 +1,8 @@
+node_modules/
+onchain/target/
+onchain/.anchor/
+onchain/test-ledger/
+*.keypair.json
+*-keypair.json
+id.json
+.env

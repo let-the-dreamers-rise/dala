@@ -1,0 +1,126 @@
+{
+  "cluster": "devnet",
+  "generatedAt": "2026-10-24T18:06:00.882Z",
+  "programId": "J4NigtmbyxjPXkrLz77ZFpkQ3JXfVuBpzEyYWuGykoMY",
+  "mint": "Hq62B7REioJs6E5Bwi6ukycD6u7zDKk9ab2H34rNhEKi",
+  "vault": "ZGsTYQvDKvCJ8dBXcBUKU7PkHmaUmGnHmYBFZFGLwf5",
+  "vaultTokens": "7yMip9eS5E79v5JKVeMjiUaWc4sRmzspQJedSbNW5JW5",
+  "pool": "CphDeM3krkYMpNU9hdFtSBBd5YZCwvTH2ppbQgpGykSa",
+  "people": {
+    "maria": "E1uXAVw5m8c4EqaUAWVAmtPc8P3R1G4ngRFSjnBZpnSU",
+    "employer": "9srk5mAis6cxW4oM6JdAnTd9zNGg5dS3GxXcTxdLNNbp",
+    "brother": "3GMAwNXXpYGhiHJgizVJdkpU6EPXfcMVxShZJH2VmXds",
+    "foundation": "C6wMjiyZMZh94dnXrw7J8KDNTqUGwFEvNwCqhKeHFEmi",
+    "motherWallet": "7EokrNzTYAu4pSYMYKBuuzTqchGiBctZKV7auPDAdSb4",
+    "relayer": "2eL4upiq3BhtqHBVT4jchJkmwSukoLaBfVA8jFoYpjoU"
+  },
+  "schedule": {
+    "payoutStart": 1792865126,
+    "periodSecs": 30,
+    "periods": 4
+  },
+  "vaultState": {
+    "worker": "E1uXAVw5m8c4EqaUAWVAmtPc8P3R1G4ngRFSjnBZpnSU",
+    "mint": "Hq62B7REioJs6E5Bwi6ukycD6u7zDKk9ab2H34rNhEKi",
+    "payoutStart": 1792865126,
+    "periodSecs": 30,
+    "periods": 4,
+    "ownSaved": 120000000,
+    "employerIn": 200000000,
+    "familyIn": 50000000,
+    "otherIn": 0,
+    "matchedIn": 100000000,
+    "claimed": 235000000,
+    "openedAt": 1792865035
+  },
+  "balances": {
+    "vault": 235000000,
+    "mother": 235000000
+  },
+  "steps": [
+    {
+      "step": "Maria opens her Dala vault (payouts: 4 monthly payments)",
+      "sig": "2hrxFQW9ZnPiuj5dk9sWuTg2Cm75pN5poQRvrLrsEdGJj1cWJW9CwgfZ3LQFy34QGQbFQUd7gmg7gT95LkfV4a1q",
+      "ok": true,
+      "at": 1792865038
+    },
+    {
+      "step": "Foundation creates a 1:1 matching pool, capped at 100 USDC per worker",
+      "sig": "5dCyM8Lfd41DCzu7PaKPSAuzTnJjophTtpzPZo3s8pnBq2hwxrRBPNtDMYNs1uj6AXdDLRjW2o1B7HDcn1zfKDEM",
+      "ok": true,
+      "at": 1792865039
+    },
+    {
+      "step": "Foundation funds the pool with 5,000 USDC",
+      "sig": "4FEyvtZaZpVM6e2NE4QSGRmygPCN6JbKRGJX7EenHuo4rHpsgkmmqBz83PCEvN8spdMLLcojE89NcHPRpKFQttyC",
+      "ok": true,
+      "at": 1792865040
+    },
+    {
+      "step": "Maria joins the matching pool",
+      "sig": "T4bugGN2zZ8BQJwYYye2vphDZ5HkmrMsqeJJXC6GSZPiAB95UBwLj98ZikoVgBDX16VuPBc9xh68UKC5BF5adUp",
+      "ok": true,
+      "at": 1792865041
+    },
+    {
+      "step": "Employer tops up 200 USDC (public, tagged as employer)",
+      "sig": "5pdH944CFx5yFUevRLu1DreEr2sSqVrY8cN9zoPz6D5y9tmiTcADytCJVxd5mdgJkeQusG9jvyA7Jf2Kz5GY8kEV",
+      "ok": true,
+      "at": 1792865041
+    },
+    {
+      "step": "Her brother sends 50 USDC (tagged as family)",
+      "sig": "xpGLoyz65MuHUAhuW3VQuoqKhii2yB2YsbMc2X5nwpToy1nyLf91bzuZykWTjAmEDw6FMSpWvF938GwTwNseTg9",
+      "ok": true,
+      "at": 1792865042
+    },
+    {
+      "step": "Payday: Maria saves 60 USDC, the pool matches 60",
+      "sig": "5DJXcZBTrypgWRCEeHum6i2f4yosLC7C3dEc6mYjDuqnL2eGwSLCETRQ2JZKGdsUKmXyE9Rq5vZbVGzjUCeUGpqi",
+      "ok": true,
+      "at": 1792865044
+    },
+    {
+      "step": "Next payday: Maria saves 60 USDC, the pool matches 40 (cap reached)",
+      "sig": "5dnBqbqsgL5BsgmsBJJc9TBYQnHWV7zXbZRHHT86kLMfLPJHfRCdPMuvtK8RfQE83GaY7PHyeoAYWEGvi5xdbjpJ",
+      "ok": true,
+      "at": 1792865044
+    },
+    {
+      "step": "Employer tries to save into her vault to farm the match",
+      "ok": false,
+      "rejectedWith": "ConstraintSeeds",
+      "at": 1792865044
+    },
+    {
+      "step": "Early withdrawal before retirement date",
+      "ok": false,
+      "rejectedWith": "PayoutNotStarted",
+      "at": 1792865044
+    },
+    {
+      "step": "Employer tries to withdraw her balance",
+      "ok": false,
+      "rejectedWith": "ConstraintSeeds",
+      "at": 1792865044
+    },
+    {
+      "step": "Retired: first monthly payout goes to her mother's wallet at home",
+      "sig": "32CLAyaYdJQG713mbQWrTEQUP7Y3pF72UnRc7SNcLMeds9E4DpwHy86Bwce1RswAmeRYSiC3n4ZpfFYwS2dMfEHj",
+      "ok": true,
+      "at": 1792865131
+    },
+    {
+      "step": "Second claim in the same month",
+      "ok": false,
+      "rejectedWith": "NothingToClaim",
+      "at": 1792865131
+    },
+    {
+      "step": "Second monthly payout",
+      "sig": "5wfMtJZG2i1EY3iGFz8XutL41sZsqtukh51AzsvSb6WmGQEc1i3Pv9UTUqNbmpNNj7rauSB6QuMukkHPPuiiU83o",
+      "ok": true,
+      "at": 1792865160
+    }
+  ]
+}

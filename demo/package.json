@@ -1,0 +1,12 @@
+{
+  "name": "dala-devnet-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo": "node run-devnet-demo.mjs"
+  },
+  "dependencies": {
+    "@solana/spl-token": "0.4.9",
+    "@solana/web3.js": "1.98.0"
+  }
+}

@@ -1,0 +1,22 @@
+skip_local_validator = true
+
+[toolchain]
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+dala = "J4NigtmbyxjPXkrLz77ZFpkQ3JXfVuBpzEyYWuGykoMY"
+
+[programs.devnet]
+dala = "J4NigtmbyxjPXkrLz77ZFpkQ3JXfVuBpzEyYWuGykoMY"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "cargo test"
+
+[hooks]

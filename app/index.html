@@ -1,0 +1,317 @@
+<title>Dala Pension Vault</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a worker's passbook. One narrow column; the passbook card is the hero, the ledger is the proof. */
+:root {
+  --bg: #f2f4f6;
+  --paper: #ffffff;
+  --ink: #15233a;
+  --muted: #5a6577;
+  --line: #d9dee6;
+  --accent: #0d6b66;
+  --accent-soft: #dcefed;
+  --sun: #d99a00;
+  --own: #0d6b66;
+  --match: #3fa79c;
+  --employer: #d99a00;
+  --family: #8c6bb1;
+  --ok: #1f7a3d;
+  --block: #b3261e;
+  --block-soft: #f8e3e1;
+  --f-display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d131d; --paper: #151d2a; --ink: #e5e9ef; --muted: #9aa5b5; --line: #2a3546;
+    --accent: #4cc3b5; --accent-soft: #173431; --sun: #f2c14e; --own: #4cc3b5; --match: #2c8a80;
+    --employer: #f2c14e; --family: #b59ad6; --ok: #6fcf8b; --block: #f2867d; --block-soft: #3a1f1d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d131d; --paper: #151d2a; --ink: #e5e9ef; --muted: #9aa5b5; --line: #2a3546;
+  --accent: #4cc3b5; --accent-soft: #173431; --sun: #f2c14e; --own: #4cc3b5; --match: #2c8a80;
+  --employer: #f2c14e; --family: #b59ad6; --ok: #6fcf8b; --block: #f2867d; --block-soft: #3a1f1d;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 1rem/1.6 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 46rem; margin: 0 auto; padding-block: 2.5rem 4rem; display: grid; gap: 2.75rem; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.2rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: 1.45rem; font-weight: 700; }
+h3 { font-size: 1.05rem; font-weight: 700; }
+p { margin: 0; max-width: 65ch; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.eyebrow { font: 500 0.75rem/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.mono { font-family: var(--f-mono); font-size: 0.82rem; overflow-wrap: anywhere; }
+.num { font-variant-numeric: tabular-nums; }
+section { display: grid; gap: 1rem; }
+
+header { display: grid; gap: 0.9rem; }
+header .lede { font-size: 1.15rem; color: var(--ink); }
+header .meaning { color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip { font: 500 0.78rem/1 var(--f-mono); padding: 0.45rem 0.6rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--paper); }
+.chip b { color: var(--ink); font-weight: 500; }
+
+/* Passbook */
+.passbook { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.pb-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding: 1.25rem 1.4rem; border-bottom: 1px dashed var(--line); }
+.pb-head .who { display: grid; gap: 0.25rem; min-width: 0; }
+.pb-head .who strong { font-family: var(--f-display); font-size: 1.25rem; }
+.pb-total { text-align: right; display: grid; gap: 0.2rem; }
+.pb-total .big { font: 700 2rem/1 var(--f-display); font-variant-numeric: tabular-nums; }
+.pb-body { padding: 1.25rem 1.4rem 1.4rem; display: grid; gap: 1.4rem; }
+.bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--line); }
+.bar span { display: block; height: 100%; }
+.legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: 0.75rem; }
+.legend div { display: grid; gap: 0.15rem; }
+.legend .k { display: flex; align-items: center; gap: 0.45rem; font-size: 0.85rem; color: var(--muted); }
+.legend .k i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.legend .v { font: 600 1.1rem/1.2 var(--f-body); font-variant-numeric: tabular-nums; }
+.schedule { display: grid; gap: 0.6rem; }
+.periods { display: grid; grid-template-columns: repeat(var(--n, 4), 1fr); gap: 0.5rem; }
+.period { border: 1px solid var(--line); border-radius: 8px; padding: 0.6rem 0.7rem; display: grid; gap: 0.15rem; font-size: 0.85rem; }
+.period.paid { background: var(--accent-soft); border-color: var(--accent); }
+.period .amt { font-weight: 600; font-variant-numeric: tabular-nums; }
+.period .st { color: var(--muted); font-size: 0.78rem; }
+.note { font-size: 0.85rem; color: var(--muted); }
+
+/* Ledger */
+.ledger { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line); }
+.ledger li { display: grid; grid-template-columns: 6.2rem 1fr; gap: 0.9rem; padding: 0.85rem 0; border-bottom: 1px solid var(--line); align-items: start; }
+.ledger .tag { font: 500 0.72rem/1 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; padding: 0.4rem 0.5rem; border-radius: 5px; text-align: center; }
+.tag.ok { color: var(--ok); border: 1px solid var(--ok); }
+.tag.blocked { color: var(--block); background: var(--block-soft); }
+.ledger .what { display: grid; gap: 0.2rem; min-width: 0; }
+.ledger .what small { color: var(--muted); font-size: 0.8rem; }
+
+/* Rules */
+.rules { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; counter-reset: rule; }
+.rules li { display: grid; grid-template-columns: 2rem 1fr; gap: 0.6rem; padding: 0.75rem 0; border-bottom: 1px solid var(--line); counter-increment: rule; }
+.rules li::before { content: counter(rule); font: 700 1.1rem/1.4 var(--f-display); color: var(--accent); }
+.rules code { font-family: var(--f-mono); font-size: 0.85rem; }
+.compare { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.table-wrap { overflow-x: auto; }
+.compare th, .compare td { text-align: left; padding: 0.6rem 0.7rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.compare th { font: 500 0.75rem/1.2 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.compare td:last-child { color: var(--accent); font-weight: 500; }
+.addr { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 1rem; font-size: 0.88rem; }
+.addr dt { color: var(--muted); }
+.addr dd { margin: 0; min-width: 0; }
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
+
+@media (max-width: 520px) {
+  .pb-total { text-align: left; }
+  .periods { grid-template-columns: repeat(2, 1fr); }
+  .ledger li { grid-template-columns: 1fr; gap: 0.4rem; }
+  .ledger .tag { justify-self: start; }
+  .addr { grid-template-columns: 1fr; }
+  .addr dd { margin-bottom: 0.4rem; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bar span { transition: width 600ms ease-out; }
+}
+</style>
+
+<script id="demo-data" type="application/json">{"cluster":"devnet","generatedAt":"2026-10-24T18:06:00.882Z","programId":"J4NigtmbyxjPXkrLz77ZFpkQ3JXfVuBpzEyYWuGykoMY","mint":"Hq62B7REioJs6E5Bwi6ukycD6u7zDKk9ab2H34rNhEKi","vault":"ZGsTYQvDKvCJ8dBXcBUKU7PkHmaUmGnHmYBFZFGLwf5","vaultTokens":"7yMip9eS5E79v5JKVeMjiUaWc4sRmzspQJedSbNW5JW5","pool":"CphDeM3krkYMpNU9hdFtSBBd5YZCwvTH2ppbQgpGykSa","people":{"maria":"E1uXAVw5m8c4EqaUAWVAmtPc8P3R1G4ngRFSjnBZpnSU","employer":"9srk5mAis6cxW4oM6JdAnTd9zNGg5dS3GxXcTxdLNNbp","brother":"3GMAwNXXpYGhiHJgizVJdkpU6EPXfcMVxShZJH2VmXds","foundation":"C6wMjiyZMZh94dnXrw7J8KDNTqUGwFEvNwCqhKeHFEmi","motherWallet":"7EokrNzTYAu4pSYMYKBuuzTqchGiBctZKV7auPDAdSb4","relayer":"2eL4upiq3BhtqHBVT4jchJkmwSukoLaBfVA8jFoYpjoU"},"schedule":{"payoutStart":1792865126,"periodSecs":30,"periods":4},"vaultState":{"worker":"E1uXAVw5m8c4EqaUAWVAmtPc8P3R1G4ngRFSjnBZpnSU","mint":"Hq62B7REioJs6E5Bwi6ukycD6u7zDKk9ab2H34rNhEKi","payoutStart":1792865126,"periodSecs":30,"periods":4,"ownSaved":120000000,"employerIn":200000000,"familyIn":50000000,"otherIn":0,"matchedIn":100000000,"claimed":235000000,"openedAt":1792865035},"balances":{"vault":235000000,"mother":235000000},"steps":[{"step":"Maria opens her Dala vault (payouts: 4 monthly payments)","sig":"2hrxFQW9ZnPiuj5dk9sWuTg2Cm75pN5poQRvrLrsEdGJj1cWJW9CwgfZ3LQFy34QGQbFQUd7gmg7gT95LkfV4a1q","ok":true,"at":1792865038},{"step":"Foundation creates a 1:1 matching pool, capped at 100 USDC per worker","sig":"5dCyM8Lfd41DCzu7PaKPSAuzTnJjophTtpzPZo3s8pnBq2hwxrRBPNtDMYNs1uj6AXdDLRjW2o1B7HDcn1zfKDEM","ok":true,"at":1792865039},{"step":"Foundation funds the pool with 5,000 USDC","sig":"4FEyvtZaZpVM6e2NE4QSGRmygPCN6JbKRGJX7EenHuo4rHpsgkmmqBz83PCEvN8spdMLLcojE89NcHPRpKFQttyC","ok":true,"at":1792865040},{"step":"Maria joins the matching pool","sig":"T4bugGN2zZ8BQJwYYye2vphDZ5HkmrMsqeJJXC6GSZPiAB95UBwLj98ZikoVgBDX16VuPBc9xh68UKC5BF5adUp","ok":true,"at":1792865041},{"step":"Employer tops up 200 USDC (public, tagged as employer)","sig":"5pdH944CFx5yFUevRLu1DreEr2sSqVrY8cN9zoPz6D5y9tmiTcADytCJVxd5mdgJkeQusG9jvyA7Jf2Kz5GY8kEV","ok":true,"at":1792865041},{"step":"Her brother sends 50 USDC (tagged as family)","sig":"xpGLoyz65MuHUAhuW3VQuoqKhii2yB2YsbMc2X5nwpToy1nyLf91bzuZykWTjAmEDw6FMSpWvF938GwTwNseTg9","ok":true,"at":1792865042},{"step":"Payday: Maria saves 60 USDC, the pool matches 60","sig":"5DJXcZBTrypgWRCEeHum6i2f4yosLC7C3dEc6mYjDuqnL2eGwSLCETRQ2JZKGdsUKmXyE9Rq5vZbVGzjUCeUGpqi","ok":true,"at":1792865044},{"step":"Next payday: Maria saves 60 USDC, the pool matches 40 (cap reached)","sig":"5dnBqbqsgL5BsgmsBJJc9TBYQnHWV7zXbZRHHT86kLMfLPJHfRCdPMuvtK8RfQE83GaY7PHyeoAYWEGvi5xdbjpJ","ok":true,"at":1792865044},{"step":"Employer tries to save into her vault to farm the match","ok":false,"rejectedWith":"ConstraintSeeds","at":1792865044},{"step":"Early withdrawal before retirement date","ok":false,"rejectedWith":"PayoutNotStarted","at":1792865044},{"step":"Employer tries to withdraw her balance","ok":false,"rejectedWith":"ConstraintSeeds","at":1792865044},{"step":"Retired: first monthly payout goes to her mother's wallet at home","sig":"32CLAyaYdJQG713mbQWrTEQUP7Y3pF72UnRc7SNcLMeds9E4DpwHy86Bwce1RswAmeRYSiC3n4ZpfFYwS2dMfEHj","ok":true,"at":1792865131},{"step":"Second claim in the same month","ok":false,"rejectedWith":"NothingToClaim","at":1792865131},{"step":"Second monthly payout","sig":"5wfMtJZG2i1EY3iGFz8XutL41sZsqtukh51AzsvSb6WmGQEc1i3Pv9UTUqNbmpNNj7rauSB6QuMukkHPPuiiU83o","ok":true,"at":1792865160}]}</script>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">SMU Web3 for Social Good 2026 &middot; Idea Track &middot; Live on Solana devnet</span>
+    <h1>Dala: the pension that travels with the worker</h1>
+    <p class="lede">A retirement vault that a migrant worker owns. Employers, family and foundations can top it up in public. It keeps paying her after she goes home, whatever country she worked in.</p>
+    <p class="meaning"><em>Dala</em> means "to carry" in Tagalog.</p>
+    <div class="chips" id="chips"></div>
+  </header>
+
+  <section aria-labelledby="pb-title">
+    <div>
+      <span class="eyebrow">Real devnet run</span>
+      <h2 id="pb-title">Maria's passbook</h2>
+    </div>
+    <p class="note">Maria is a domestic worker in Singapore, a demo persona. Every number below was read back from her vault on Solana devnet after the run. Amounts are in a devnet stand-in for USDC. Time is compressed so that one month equals 30 seconds.</p>
+    <article class="passbook">
+      <div class="pb-head">
+        <div class="who">
+          <span class="eyebrow">Vault</span>
+          <strong>Maria</strong>
+          <a class="mono" id="vault-link" href="https://explorer.solana.com/?cluster=devnet" target="_blank" rel="noreferrer">Vault on Solana Explorer</a>
+        </div>
+        <div class="pb-total">
+          <span class="eyebrow">Paid in</span>
+          <span class="big" id="total"></span>
+          <span class="note" id="total-sub"></span>
+        </div>
+      </div>
+      <div class="pb-body">
+        <div class="bar" id="bar" role="img" aria-label="Where the balance came from"></div>
+        <div class="legend" id="legend"></div>
+        <div class="schedule">
+          <h3>Retirement payouts</h3>
+          <div class="periods" id="periods"></div>
+          <p class="note" id="sched-note"></p>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section aria-labelledby="ledger-title">
+    <div>
+      <span class="eyebrow">Every step is a public transaction</span>
+      <h2 id="ledger-title">What happened, and what the program refused</h2>
+    </div>
+    <ol class="ledger" id="ledger"></ol>
+    <p class="note">Refused steps were simulated against the live program on devnet. They show the error the program returned, so no transaction exists for them.</p>
+  </section>
+
+  <section aria-labelledby="rules-title">
+    <h2 id="rules-title">The rules the program enforces</h2>
+    <ol class="rules">
+      <li><div><code>open_vault</code>: the worker fixes her retirement date and payout schedule when she opens the vault. Nobody can change them afterwards, including Dala.</div></li>
+      <li><div><code>contribute</code>: anyone can top up. Each top-up is tagged employer, family or other, and records who sent it, so a promised match can be checked.</div></li>
+      <li><div><code>create_match_pool</code> / <code>fund_pool</code>: a sponsor sets a match rate and a cap per worker, then funds the pool.</div></li>
+      <li><div><code>save_with_match</code>: only the worker's own deposit triggers a match, and the match is paid in the same transaction. An employer cannot farm the sponsor's money.</div></li>
+      <li><div><code>claim</code>: from the start date, she withdraws only what has unlocked, one share per period, to her own wallet or to a family member's. There is no other way to take money out.</div></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="why-title">
+    <h2 id="why-title">Why this needs a public blockchain</h2>
+    <div class="table-wrap">
+      <table class="compare">
+        <thead><tr><th>Need</th><th>Bank or pension app</th><th>Dala</th></tr></thead>
+        <tbody>
+          <tr><td>She moves to another country</td><td>Account closed or frozen</td><td>Same vault, same key</td></tr>
+          <tr><td>Check the employer's match</td><td>A promise inside a closed app</td><td>Public, tagged transaction</td></tr>
+          <tr><td>Funder proves a match was earned</td><td>Trust the operator's report</td><td>Paid only against her deposit</td></tr>
+          <tr><td>Pressure to cash out early</td><td>A custodian can be pressured</td><td>Lock enforced by code</td></tr>
+          <tr><td>No bank account in any country</td><td>KYC and an account per country</td><td>A phone and a passkey</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="addr-title">
+    <h2 id="addr-title">On-chain addresses</h2>
+    <dl class="addr" id="addr"></dl>
+  </section>
+
+  <footer>
+    <p>Prototype on Solana devnet. Not audited. Not a licensed financial product. Version 1 is non-custodial and non-pooled. Yield from tokenised Treasury bills would come later, through a licensed partner.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var D = JSON.parse(document.getElementById("demo-data").textContent);
+  var DEC = 1e6;
+  var ex = function (kind, id) { return "https://explorer.solana.com/" + kind + "/" + id + "?cluster=devnet"; };
+  var usd = function (raw) { return (raw / DEC).toLocaleString("en-US", { maximumFractionDigits: 2 }) + " USDC"; };
+  var short = function (s) { return s.slice(0, 4) + "..." + s.slice(-4); };
+  var el = function (tag, attrs, text) {
+    var n = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); });
+    if (text != null) n.textContent = text;
+    return n;
+  };
+
+  var v = D.vaultState;
+  var total = v.ownSaved + v.employerIn + v.familyIn + v.otherIn + v.matchedIn;
+
+  var chips = document.getElementById("chips");
+  [["program", short(D.programId), ex("address", D.programId)], ["cluster", "devnet", null], ["run", D.generatedAt.slice(0, 16).replace("T", " ") + " UTC", null]]
+    .forEach(function (c) {
+      var chip = c[2] ? el("a", { class: "chip", href: c[2], target: "_blank", rel: "noreferrer" }) : el("span", { class: "chip" });
+      chip.append(c[0] + " ");
+      chip.appendChild(el("b", null, c[1]));
+      chips.appendChild(chip);
+    });
+
+  var vl = document.getElementById("vault-link");
+  vl.href = ex("address", D.vault);
+  vl.textContent = D.vault;
+  document.getElementById("total").textContent = usd(total);
+  document.getElementById("total-sub").textContent = usd(D.balances.vault) + " still locked";
+
+  var parts = [
+    ["Her own savings", v.ownSaved, "var(--own)"],
+    ["Foundation match", v.matchedIn, "var(--match)"],
+    ["Employer", v.employerIn, "var(--employer)"],
+    ["Family", v.familyIn, "var(--family)"]
+  ];
+  if (v.otherIn) parts.push(["Other", v.otherIn, "var(--muted)"]);
+  var bar = document.getElementById("bar");
+  var legend = document.getElementById("legend");
+  parts.forEach(function (p) {
+    var s = el("span", { title: p[0] });
+    s.style.width = (total ? (p[1] / total) * 100 : 0) + "%";
+    s.style.background = p[2];
+    bar.appendChild(s);
+    var d = el("div");
+    var k = el("span", { class: "k" });
+    var sw = el("i");
+    sw.style.background = p[2];
+    k.appendChild(sw);
+    k.append(p[0]);
+    d.appendChild(k);
+    d.appendChild(el("span", { class: "v" }, usd(p[1])));
+    legend.appendChild(d);
+  });
+
+  var periods = document.getElementById("periods");
+  periods.style.setProperty("--n", v.periods);
+  var claimedSoFar = v.claimed;
+  for (var i = 1; i <= v.periods; i++) {
+    var due = Math.floor((total * i) / v.periods) - Math.floor((total * (i - 1)) / v.periods);
+    var paid = claimedSoFar >= Math.floor((total * i) / v.periods);
+    var p = el("div", { class: "period" + (paid ? " paid" : "") });
+    p.appendChild(el("span", { class: "st" }, "Month " + i));
+    p.appendChild(el("span", { class: "amt" }, usd(due)));
+    p.appendChild(el("span", { class: "st" }, paid ? "Paid to her mother" : "Locked until due"));
+    periods.appendChild(p);
+  }
+  document.getElementById("sched-note").textContent =
+    usd(D.balances.mother) + " has reached her mother's wallet at home. The rest unlocks one share per month and cannot be taken out early.";
+
+  var ledger = document.getElementById("ledger");
+  D.steps.forEach(function (s) {
+    var li = el("li");
+    li.appendChild(el("span", { class: "tag " + (s.ok ? "ok" : "blocked") }, s.ok ? "Done" : "Refused"));
+    var w = el("div", { class: "what" });
+    w.appendChild(el("span", null, s.step));
+    if (s.ok) {
+      var a = el("a", { class: "mono", href: ex("tx", s.sig), target: "_blank", rel: "noreferrer" }, "tx " + short(s.sig));
+      var sm = el("small");
+      sm.appendChild(a);
+      w.appendChild(sm);
+    } else {
+      w.appendChild(el("small", { class: "mono" }, "program error: " + s.rejectedWith));
+    }
+    li.appendChild(w);
+    ledger.appendChild(li);
+  });
+
+  var addr = document.getElementById("addr");
+  [["Program", D.programId], ["Maria's vault", D.vault], ["Vault token account", D.vaultTokens], ["Foundation match pool", D.pool], ["Mother's wallet", D.people.motherWallet], ["Demo stablecoin mint", D.mint]]
+    .forEach(function (r) {
+      addr.appendChild(el("dt", null, r[0]));
+      var dd = el("dd");
+      dd.appendChild(el("a", { class: "mono", href: ex("address", r[1]), target: "_blank", rel: "noreferrer" }, r[1]));
+      addr.appendChild(dd);
+    });
+})();
+</script>
