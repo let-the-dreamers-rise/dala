@@ -92,7 +92,7 @@ The closest existing product, pinBox's "gift a pension", proves employers and fa
 ## What is built
 
 - **Solana program** (Anchor), deployed to devnet at `J4NigtmbyxjPXkrLz77ZFpkQ3JXfVuBpzEyYWuGykoMY`, with eight instructions: open vault, contribute, create, fund and join a match pool, save, save with match, and claim.
-- **10 passing tests:** payout and matching math, plus attacks such as an employer trying to farm the match or withdraw her balance.
+- **23 passing tests:** 10 program tests (payout and matching math, plus attacks such as an employer trying to farm the match or withdraw her balance) and 13 relayer tests (it refuses to co-sign transfers to strangers, draining its own funds, or actions outside the user's role).
 - **Live web app:** passkey sign-in that derives a Solana wallet from the passkey, so there's no seed phrase. A relayer pays every fee and co-signs only Dala instructions allowed for the signed-in user's role.
 - **Three workspaces, one wallet:**
   - *Worker:* Home with a getting-started checklist and passbook, Save (choose a foundation's pool, see the match before you commit), Send home (instant remittance), Payouts (monthly schedule, claim to yourself or your family), History (read from the chain), Share (QR links for the employer and the family).
