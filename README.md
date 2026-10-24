@@ -3,6 +3,7 @@
 A portable, worker-owned stablecoin pension vault for migrant workers, built on Solana.
 Submission for the SMU "From Vision to Impact: Building Web3 for Social Good 2026" hackathon (Idea Track).
 
+- Live demo: https://dala-puce.vercel.app
 - Repository: https://github.com/let-the-dreamers-rise/dala
 - Submission text: [SUBMISSION.md](SUBMISSION.md)
 - Program (devnet): `J4NigtmbyxjPXkrLz77ZFpkQ3JXfVuBpzEyYWuGykoMY`
@@ -48,6 +49,12 @@ cd demo && npm install && WALLET=~/.config/solana/id.json OUT=../app/demo.json n
 
 ```bash
 node app/build-page.mjs
+```
+
+The page is deployed from `app/` to Vercel as a static site:
+
+```bash
+cd app && vercel deploy --prod
 ```
 
 ## Status
