@@ -30,6 +30,10 @@ export const signOut = () => call("/api/auth/session", { method: "DELETE" });
 export const state = () => call("/api/state");
 export const onboard = () => call("/api/onboard", { method: "POST" });
 export const topup = (kind, amount) => call("/api/topup", { method: "POST", body: { kind, amount } });
+export const pools = () => call("/api/pools");
+export const impact = () => call("/api/impact");
+export const ledger = async (address, limit = 20) => (await call(`/api/ledger?address=${encodeURIComponent(address)}&limit=${limit}`)).items;
+export const vaults = (workers) => call(`/api/vaults?workers=${workers.map(encodeURIComponent).join(",")}`);
 
 export async function signIn(wallet, role) {
   const ch = await call("/api/auth/challenge");

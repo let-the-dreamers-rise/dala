@@ -7,7 +7,7 @@ import { HttpError } from "./http.js";
 const COOKIE = "dala_session";
 const SESSION_SECS = 12 * 60 * 60;
 const CHALLENGE_SECS = 5 * 60;
-export const ROLES = ["worker", "employer"];
+export const ROLES = ["worker", "employer", "foundation"];
 
 function secret() {
   const s = process.env.SESSION_SECRET;
@@ -57,7 +57,7 @@ export function verifySignIn({ pubkey, signature, nonce, exp, token }) {
 }
 
 export function setSession(res, { sub, role, method }) {
-  if (!ROLES.includes(role)) throw new HttpError(400, "Choose worker or employer");
+  if (!ROLES.includes(role)) throw new HttpError(400, "Choose worker, employer or foundation");
   const payload = b64u(JSON.stringify({ sub, role, method, exp: Math.floor(Date.now() / 1000) + SESSION_SECS }));
   const value = `${payload}.${mac(payload)}`;
   res.setHeader("Set-Cookie", `${COOKIE}=${value}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SESSION_SECS}`);

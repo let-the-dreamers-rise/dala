@@ -46,7 +46,7 @@ Everything between the two lines below.
 **Track:** Idea Track, with a working prototype on Solana devnet
 
 **Try it in three minutes:** https://dala-puce.vercel.app/app.html  
-Sign in with a passkey, open a vault, get matched, try to withdraw early, and watch a payout arrive. No wallet app and no SOL needed.
+A short intro explains the problem and the four steps. Then sign in with a passkey as a worker, employer or foundation. A checklist walks the worker through opening a vault, getting matched, inviting her employer, trying (and failing) to withdraw early, and receiving a payout at home. No wallet app and no SOL needed.
 
 **Website:** https://dala-puce.vercel.app · **Code:** https://github.com/let-the-dreamers-rise/dala
 
@@ -93,7 +93,13 @@ The closest existing product, pinBox's "gift a pension", proves employers and fa
 
 - **Solana program** (Anchor), deployed to devnet at `J4NigtmbyxjPXkrLz77ZFpkQ3JXfVuBpzEyYWuGykoMY`, with eight instructions: open vault, contribute, create, fund and join a match pool, save, save with match, and claim.
 - **10 passing tests:** payout and matching math, plus attacks such as an employer trying to farm the match or withdraw her balance.
-- **Live web app:** passkey sign-in that derives a Solana wallet from the passkey, so there's no seed phrase. A relayer pays every fee and co-signs only Dala instructions for the signed-in user. Worker and employer views.
+- **Live web app:** passkey sign-in that derives a Solana wallet from the passkey, so there's no seed phrase. A relayer pays every fee and co-signs only Dala instructions allowed for the signed-in user's role.
+- **Three workspaces, one wallet:**
+  - *Worker:* Home with a getting-started checklist and passbook, Save (choose a foundation's pool, see the match before you commit), Send home (instant remittance), Payouts (monthly schedule, claim to yourself or your family), History (read from the chain), Share (QR links for the employer and the family).
+  - *Employer:* a worker roster with live vault status, payroll runs that pay up to 5 pensions in one signature, and a printable contribution statement where every line links to its transaction.
+  - *Foundation:* create a match pool with its own rate and cap, fund it, and see every match it paid.
+  - *Public:* an Impact tab with live totals, and a read-only passbook page a worker can send to her family.
+- **Labelled as planned, not built:** hardship withdrawal approved by an NGO, a named heir, guardian recovery, employer autopay, and pool eligibility lists.
 - **Recorded devnet run** with every transaction linked: https://dala-puce.vercel.app/story.html
 
 ## Tech stack

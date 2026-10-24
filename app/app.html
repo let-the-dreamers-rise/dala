@@ -1,172 +1,118 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Dala App</title>
-<meta name="description" content="Open a Dala pension vault on Solana devnet with a passkey. No seed phrase, no gas.">
+<meta name="description" content="Dala: a pension that travels with migrant workers. Worker, employer and foundation workspaces on Solana devnet.">
+<link rel="icon" href="/brand/dala-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/css/tokens.css">
 <link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/css/workspace.css">
 <script src="https://unpkg.com/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tweetnacl/1.0.3/nacl-fast.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module" src="/js/app.js"></script>
 </head>
 <body>
 <header class="bar gutter">
-  <a class="logo" href="/" aria-label="Dala home">Dala</a>
+  <a class="logo" href="/" aria-label="Dala home"><img src="/brand/dala-logo.png" alt="" width="28" height="28">Dala</a>
   <span class="net">Solana devnet</span>
   <div class="who" id="who" hidden>
-    <span class="role-pill" id="who-role"></span>
-    <span class="mono" id="who-addr"></span>
-    <button class="btn quiet small" id="signout" type="button">Sign out</button>
+    <details class="switch" id="switch">
+      <summary><span class="role-pill" id="who-role"></span><span class="mono" id="who-addr"></span></summary>
+      <div class="switch-menu" role="menu">
+        <p class="fine">Same wallet, different workspace</p>
+        <button type="button" data-role="worker" role="menuitem">Worker</button>
+        <button type="button" data-role="employer" role="menuitem">Employer</button>
+        <button type="button" data-role="foundation" role="menuitem">Foundation</button>
+        <hr>
+        <button type="button" id="signout" role="menuitem">Sign out</button>
+      </div>
+    </details>
   </div>
 </header>
 
-<main class="shell gutter">
-  <div class="main-col">
-    <p class="flash" id="flash" role="status" aria-live="polite" hidden></p>
+<nav class="tabs gutter" id="tabs" aria-label="Workspace"></nav>
 
-    <!-- Signed out -->
-    <section class="card signin" id="view-signin" aria-labelledby="signin-title">
-      <span class="eyebrow">Prototype on devnet</span>
-      <h1 id="signin-title">Your pension, opened with your fingerprint</h1>
-      <p class="lede">Dala makes a Solana wallet from your passkey. There is no seed phrase to lose and no gas to buy. Dala pays every network fee.</p>
-      <fieldset class="roles">
-        <legend class="eyebrow">I am</legend>
-        <label class="role"><input type="radio" name="role" id="role-worker" value="worker" checked><span><strong>A worker</strong><small>Save for retirement, get matched, get paid at home</small></span></label>
-        <label class="role"><input type="radio" name="role" id="role-employer" value="employer"><span><strong>An employer</strong><small>Pay into your worker's vault, on the record</small></span></label>
-      </fieldset>
-      <div class="signin-actions">
-        <button class="btn" id="btn-passkey-new" type="button">Create a passkey wallet</button>
-        <button class="btn ghost" id="btn-passkey" type="button">I already have one</button>
+<main class="stage gutter" id="stage">
+  <p class="flash" id="flash" role="status" aria-live="polite" hidden></p>
+
+  <!-- First visit: a short walkthrough before anyone is asked to sign in. -->
+  <section class="intro" id="intro" aria-labelledby="intro-title" hidden>
+    <div class="intro-card">
+      <ol class="dots" id="intro-dots" aria-hidden="true"><li></li><li></li><li></li><li></li><li></li></ol>
+      <div class="intro-slide problem" data-slide="0">
+        <p class="eyebrow">The problem</p>
+        <h1 id="intro-title">You work for years abroad. You come home with nothing saved.</h1>
+        <ul class="facts">
+          <li><b>169 million</b><span>people work outside their home country (ILO)</span></li>
+          <li><b>Closed</b><span>Singapore's CPF and Hong Kong's MPF leave most foreign workers out</span></li>
+          <li><b>One lump sum</b><span>a Gulf end-of-service payment, usually spent within months</span></li>
+        </ul>
+        <p>No pension follows you when you change employer or country.</p>
       </div>
-      <button class="linkish" id="btn-device" type="button">No passkey? Use a wallet saved in this browser</button>
-      <p class="fine">Signing in asks your wallet to sign a one-time message. It does not move money. Demo stablecoin only, on Solana devnet.</p>
-    </section>
-
-    <!-- Worker -->
-    <section id="view-worker" hidden>
-      <div class="card" id="open-card" hidden>
-        <span class="eyebrow">Step 1</span>
-        <h2>Open your vault</h2>
-        <p>Choose when your retirement payouts start and how many monthly payments you want. Nobody can change this later, including Dala. In this demo one month lasts 30 seconds.</p>
-        <form class="open-form" id="open-form">
-          <label for="start-in">Payouts start in</label>
-          <select id="start-in">
-            <option value="90">90 seconds</option>
-            <option value="180" selected>3 minutes</option>
-            <option value="300">5 minutes</option>
-            <option value="600">10 minutes</option>
-          </select>
-          <label for="months">Monthly payouts</label>
-          <select id="months">
-            <option value="3">3</option>
-            <option value="4" selected>4</option>
-            <option value="6">6</option>
-            <option value="12">12</option>
-          </select>
-          <button class="btn" type="submit">Open my vault</button>
-        </form>
+      <div class="intro-slide" data-slide="1" hidden>
+        <div class="intro-art art-passbook" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="eyebrow">What Dala does</p>
+        <h2>A pension vault in your own name</h2>
+        <p>It lives on your phone, opened with your fingerprint. It stays yours when you change employer or country.</p>
       </div>
-
-      <article class="card passbook" id="passbook" hidden>
-        <div class="pb-head">
-          <div>
-            <span class="eyebrow">Your vault</span>
-            <a class="mono" id="pb-vault" href="https://explorer.solana.com/?cluster=devnet" target="_blank" rel="noreferrer">Vault on Solana Explorer</a>
-          </div>
-          <div class="pb-total">
-            <span class="eyebrow">Paid in</span>
-            <span class="big num" id="pb-total">0</span>
-            <span class="fine num" id="pb-locked"></span>
-          </div>
-        </div>
-        <div class="bar-track" id="pb-bar" role="img" aria-label="Where your balance came from"></div>
-        <dl class="legend" id="pb-legend"></dl>
-        <div class="clock" id="pb-clock" aria-live="polite"></div>
-        <div class="periods" id="pb-periods"></div>
-      </article>
-
-      <div class="card actions" id="actions" hidden>
-        <h2>Move money</h2>
-        <form class="row" id="save-form">
-          <label for="save-amt">Save from your wallet</label>
-          <div class="inline">
-            <input id="save-amt" type="number" min="1" max="500" step="1" value="50" inputmode="numeric">
-            <button class="btn" type="submit">Save</button>
-          </div>
-          <small>The foundation matches 1:1, up to 100 per worker. Only your own deposit triggers it.</small>
-        </form>
-        <div class="row">
-          <span class="label">Top-ups from others <em>(simulated payers)</em></span>
-          <div class="inline wrap">
-            <button class="btn quiet" id="btn-employer" type="button">Employer pays 100</button>
-            <button class="btn quiet" id="btn-family" type="button">Family sends 50</button>
-          </div>
-        </div>
-        <div class="row">
-          <label for="claim-to">Withdraw</label>
-          <div class="inline wrap">
-            <select id="claim-to">
-              <option value="family">to my family's wallet at home</option>
-              <option value="self">to my own wallet</option>
-            </select>
-            <button class="btn ghost" id="btn-claim" type="button">Withdraw</button>
-          </div>
-          <small id="claim-hint"></small>
-        </div>
-        <div class="row">
-          <span class="label">Your worker address for employers</span>
-          <div class="inline wrap">
-            <code class="mono share" id="share-addr"></code>
-            <button class="btn quiet small" id="btn-copy" type="button">Copy</button>
-          </div>
-        </div>
+      <div class="intro-slide" data-slide="2" hidden>
+        <div class="intro-art art-coins" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <p class="eyebrow">Who pays in</p>
+        <h2>You save. Others add to it.</h2>
+        <p>When you save, a foundation matches it. Your employer and your family can pay in too. Every payment shows who sent it.</p>
       </div>
-    </section>
-
-    <!-- Employer -->
-    <section id="view-employer" hidden>
-      <div class="card">
-        <span class="eyebrow">Employer</span>
-        <h2>Pay into a worker's pension</h2>
-        <p>Every payment is public and tagged as yours, so your worker and her NGO can check it.</p>
-        <form class="pay-form" id="pay-form">
-          <label for="pay-worker">Worker address</label>
-          <input id="pay-worker" type="text" autocomplete="off" spellcheck="false" placeholder="Paste the address from her Dala app" required>
-          <label for="pay-amt">Amount (demo USDC)</label>
-          <input id="pay-amt" type="number" min="1" max="1000" step="1" value="100" inputmode="numeric" required>
-          <button class="btn" type="submit">Pay into her vault</button>
-        </form>
+      <div class="intro-slide" data-slide="3" hidden>
+        <div class="intro-art art-lock" aria-hidden="true"><span></span></div>
+        <p class="eyebrow">Why it lasts</p>
+        <h2>Locked until the day you choose</h2>
+        <p>Then it pays one share each month, to you or your family at home. Before that day, nobody can take it out: not an employer, an agent, or Dala.</p>
       </div>
-    </section>
-
-    <section class="card" id="activity-card" hidden>
-      <h2>Activity</h2>
-      <ol class="activity" id="activity"></ol>
-    </section>
-  </div>
-
-  <aside class="side">
-    <div class="card mini" id="wallet-card" hidden>
-      <span class="eyebrow">Your wallet</span>
-      <span class="big num" id="wallet-amt">0</span>
-      <a class="mono" id="wallet-link" href="https://explorer.solana.com/?cluster=devnet" target="_blank" rel="noreferrer">Wallet on Explorer</a>
-      <span class="fine" id="wallet-method"></span>
+      <div class="intro-slide" data-slide="4" hidden>
+        <p class="eyebrow">How you start</p>
+        <h2>Four steps, about two minutes</h2>
+        <ol class="steps">
+          <li><b>Create your wallet</b><span>with your fingerprint or face. No seed phrase, no bank account.</span></li>
+          <li><b>Open your vault</b><span>and pick when monthly payouts begin.</span></li>
+          <li><b>Save a little</b><span>and watch the foundation match it.</span></li>
+          <li><b>Send your link to your employer</b><span>so they can pay in too.</span></li>
+        </ol>
+        <p class="fine">This is a live demo on Solana devnet. You get 500 demo dollars, and Dala pays the network fees. A month lasts 30 seconds here, so you can see payouts happen.</p>
+      </div>
+      <div class="intro-nav">
+        <button class="btn quiet" id="intro-back" type="button">Back</button>
+        <button class="linkish" id="intro-skip" type="button">Skip</button>
+        <button class="btn" id="intro-next" type="button">Next</button>
+      </div>
     </div>
-    <div class="card mini" id="family-card" hidden>
-      <span class="eyebrow">Family wallet at home</span>
-      <span class="big num" id="family-amt">0</span>
-      <span class="fine">A demo address that only receives your payouts.</span>
+  </section>
+
+  <!-- Sign in -->
+  <section class="card signin" id="signin" aria-labelledby="signin-title" hidden>
+    <p class="invite" id="invite" hidden></p>
+    <span class="eyebrow">Get started</span>
+    <h1 id="signin-title">Who are you here as?</h1>
+    <fieldset class="roles">
+      <legend class="sr-only">Choose a workspace</legend>
+      <label class="role"><input type="radio" name="role" id="role-worker" value="worker" checked><span><strong>Worker</strong><small>Save for retirement, get matched, get paid at home</small></span></label>
+      <label class="role"><input type="radio" name="role" id="role-employer" value="employer"><span><strong>Employer</strong><small>Pay into your workers' pensions, on the record</small></span></label>
+      <label class="role"><input type="radio" name="role" id="role-foundation" value="foundation"><span><strong>Foundation or NGO</strong><small>Fund a match pool and see every worker it reached</small></span></label>
+    </fieldset>
+    <div class="signin-actions">
+      <button class="btn" id="btn-passkey-new" type="button">Create a passkey wallet</button>
+      <button class="btn ghost" id="btn-passkey" type="button">I already have one</button>
     </div>
-    <div class="card mini" id="pool-card">
-      <span class="eyebrow">Foundation match pool</span>
-      <dl class="stats" id="pool-stats"><dt>Status</dt><dd>Loading</dd></dl>
-    </div>
-  </aside>
+    <button class="linkish" id="btn-device" type="button">No passkey on this device? Use a wallet saved in this browser</button>
+    <p class="fine">A passkey is your fingerprint or face unlock. It creates your wallet, so there is no seed phrase to write down. Signing in only signs a message and moves no money. Demo stablecoin on Solana devnet. <button class="linkish" id="replay-intro" type="button">Replay the intro</button></p>
+  </section>
+
+  <!-- Role workspaces mount their views here. -->
+  <div id="views"></div>
 </main>
 </body>
 </html>

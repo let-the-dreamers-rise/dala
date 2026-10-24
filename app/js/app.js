@@ -1,108 +1,130 @@
-// Dala app controller: sign-in, onboarding, worker and employer actions, polling.
+// Dala app shell: intro, sign-in, role workspaces with tabs, polling.
 import * as api from "./api.js";
 import * as wallet from "./wallet.js";
-import * as view from "./render.js";
+import { $, el, short, usd, flash, busy, isBusy, setLogOwner } from "./ui.js";
+import { introSeen, runIntro } from "./intro.js";
+import worker from "./views/worker.js";
+import employer from "./views/employer.js";
+import foundation from "./views/foundation.js";
+import impact from "./views/impact.js";
 
-const { $ } = view;
-const ctx = { session: null, wallet: null, state: null, clockOffset: 0, busy: false };
-
-const logKey = () => `dala.activity.${ctx.session?.pubkey}`;
-function loadLog() {
-  try { return JSON.parse(localStorage.getItem(logKey()) || "[]"); } catch { return []; }
-}
-function log(entry) {
-  const items = [{ ...entry, at: Date.now() }, ...loadLog()].slice(0, 30);
-  try { localStorage.setItem(logKey(), JSON.stringify(items)); } catch { /* storage blocked: list stays in memory only */ }
-  view.renderActivity(items);
-}
+const VIEWS = { worker, employer, foundation };
+const params = new URLSearchParams(location.search);
+const invitedBy = params.get("pay");
+const ctx = { session: null, wallet: null, state: null, offset: 0, invitedBy };
+let active = null; // { view, panels: Map, tab }
 
 const roleChoice = () => document.querySelector('input[name="role"]:checked').value;
+const now = () => Math.floor(Date.now() / 1000 + ctx.offset);
 
-/** Run one user action with a busy guard, button disabling and uniform error reporting. */
-async function busy(button, label, fn) {
-  if (ctx.busy) return;
-  ctx.busy = true;
-  const old = button?.textContent;
-  if (button) { button.disabled = true; button.textContent = label; }
-  try {
-    await fn();
-  } catch (err) {
-    view.flash(err.message || "Something went wrong", true);
-  } finally {
-    ctx.busy = false;
-    if (button) { button.disabled = false; button.textContent = old; }
-  }
+function needsWallet() {
+  if (ctx.wallet) return ctx.wallet;
+  throw new Error("Your wallet is locked in this tab. Sign out, then sign in again with your passkey.");
 }
 
-/** A program refusal (HTTP 422) is a result worth showing, not a crash. */
-async function attempt(text, fn) {
-  try {
-    const res = await fn();
-    log({ ok: true, text, sig: res.sig });
-    view.flash(`${text}: confirmed on devnet.`);
-  } catch (err) {
-    if (err.status === 422) {
-      log({ ok: false, text, error: err.message });
-      view.flash(`Refused by the program: ${err.message}`, true);
-    } else {
-      throw err;
+const helpers = { refresh, go, needsWallet, now, ctx };
+
+// ---- Tabs ----------------------------------------------------------------
+
+function tabsFor(role) {
+  return [...VIEWS[role].tabs, ...impact.tabs];
+}
+
+function mountWorkspace(role) {
+  const views = $("views");
+  views.replaceChildren();
+  const panels = new Map();
+  for (const v of [VIEWS[role], impact]) {
+    for (const [id, node] of v.mount(helpers)) {
+      node.hidden = true;
+      node.classList.add("panel");
+      node.id = `panel-${id}`;
+      node.setAttribute("role", "tabpanel");
+      panels.set(id, { node, view: v });
+      views.append(node);
     }
   }
-  await refresh();
+  const nav = $("tabs");
+  nav.setAttribute("role", "tablist");
+  nav.replaceChildren(...tabsFor(role).map((t) =>
+    el("a", { href: `#${t.id}`, role: "tab", id: `tab-${t.id}`, "aria-controls": `panel-${t.id}`, class: t.id === "impact" ? "public" : "" }, t.label)));
+  nav.hidden = false;
+  active = { role, panels, tab: null };
+  go(location.hash.slice(1));
 }
 
-async function startSession(w) {
+/** Show one tab. Unknown or foreign tab ids fall back to the role's first tab. */
+export function go(id) {
+  if (!active) return;
+  const tab = active.panels.has(id) ? id : tabsFor(active.role)[0].id;
+  active.tab = tab;
+  for (const [pid, p] of active.panels) p.node.hidden = pid !== tab;
+  for (const a of $("tabs").children) a.setAttribute("aria-selected", String(a.id === `tab-${tab}`));
+  if (location.hash.slice(1) !== tab) history.replaceState(null, "", `${location.pathname}${location.search}#${tab}`);
+  const p = active.panels.get(tab);
+  p.view.show?.(tab, helpers);
+  scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ---- Session -------------------------------------------------------------
+
+async function startSession(w, role = roleChoice()) {
   ctx.wallet = w;
-  ctx.session = await api.signIn(w, roleChoice());
+  ctx.session = await api.signIn(w, role);
   await enter();
 }
 
 async function enter() {
-  $("view-signin").hidden = true;
+  $("signin").hidden = true;
+  $("intro").hidden = true;
   $("who").hidden = false;
   $("who-role").textContent = ctx.session.role;
-  $("who-addr").textContent = view.short(ctx.session.pubkey);
-  view.renderActivity(loadLog());
+  $("who-addr").textContent = short(ctx.session.pubkey);
+  for (const b of document.querySelectorAll("#switch [data-role]")) b.disabled = b.dataset.role === ctx.session.role;
+  setLogOwner(ctx.session.pubkey);
+  mountWorkspace(ctx.session.role);
   await refresh();
-  if (ctx.state?.me?.wallet.amount == null || ctx.state.me.wallet.amount === 0) {
-    view.flash("Setting up your demo wallet. Dala pays the network fees.");
-    await api.onboard();
-    log({ ok: true, text: ctx.session.role === "worker" ? "Wallet funded with 500 demo USDC" : "Wallet funded with 2,000 demo USDC" });
+  go(active.tab); // re-run the tab's loader now that state has arrived
+  if (ctx.state?.me?.wallet.amount == null) flash("Setting up your demo wallet. Dala pays the network fees.");
+  const setup = await api.onboard();
+  if (setup.sig) {
     await refresh();
+    if (setup.funded) flash(`Your ${ctx.session.role} wallet was topped up with ${usd(setup.funded)} in demo dollars.`);
   }
+}
+
+async function switchRole(role) {
+  $("switch").open = false;
+  const w = needsWallet();
+  await startSession(w, role);
 }
 
 async function refresh() {
   const s = await api.state();
   ctx.state = s;
-  ctx.clockOffset = s.now - Date.now() / 1000;
-  view.renderPool(s.pool);
-  if (!s.me) return;
-  view.renderWallet(s.me);
-  const worker = s.me.role === "worker";
-  $("view-worker").hidden = !worker;
-  $("view-employer").hidden = worker;
-  if (worker) {
-    const v = s.me.vault;
-    $("open-card").hidden = Boolean(v);
-    $("passbook").hidden = !v;
-    $("actions").hidden = !v;
-    $("share-addr").textContent = s.me.pubkey;
-    if (v) {
-      view.renderPassbook(v, s.me.matched);
-      tick();
-    }
+  ctx.offset = s.now - Date.now() / 1000;
+  if (active && s.me) {
+    VIEWS[active.role].update(helpers);
+    impact.update?.(helpers);
   }
 }
 
-function tick() {
-  const v = ctx.state?.me?.vault;
-  if (v) view.renderClock(v, Math.floor(Date.now() / 1000 + ctx.clockOffset));
+// ---- Signed-out screens --------------------------------------------------
+
+function showSignIn() {
+  $("signin").hidden = false;
+  $("tabs").hidden = true;
+  if (invitedBy) {
+    $("role-employer").checked = true;
+    const inv = $("invite");
+    inv.hidden = false;
+    inv.textContent = `A worker (${short(invitedBy)}) asked you to pay into their Dala pension. Sign in as an employer to add them to your payroll.`;
+  }
 }
 
-function needsWallet() {
-  if (ctx.wallet) return ctx.wallet;
-  throw new Error("Your wallet is locked in this tab. Sign out and sign in again with your passkey.");
+async function welcome() {
+  if (!invitedBy && !introSeen()) await runIntro();
+  showSignIn();
 }
 
 function wire() {
@@ -112,7 +134,7 @@ function wire() {
       await startSession(await wallet.createPasskeyWallet(`Dala ${roleChoice()}`));
     } catch (err) {
       if (err instanceof wallet.PasskeyUnsupported) throw new Error(`${err.message}. Use a wallet saved in this browser instead.`);
-      if (err.name === "NotAllowedError") throw new Error("Passkey request was cancelled.");
+      if (err.name === "NotAllowedError") throw new Error("The passkey request was cancelled.");
       throw err;
     }
   }));
@@ -120,57 +142,26 @@ function wire() {
     try {
       await startSession(await wallet.usePasskeyWallet());
     } catch (err) {
-      if (err.name === "NotAllowedError") throw new Error("Passkey request was cancelled or no Dala passkey was found.");
+      if (err.name === "NotAllowedError") throw new Error("The passkey request was cancelled, or no Dala passkey was found.");
       throw err;
     }
   }));
   $("btn-device").addEventListener("click", (e) => busy(e.currentTarget, "Signing in", () => startSession(wallet.deviceWallet())));
+  $("replay-intro").addEventListener("click", async () => {
+    $("signin").hidden = true;
+    await runIntro();
+    showSignIn();
+  });
+  for (const b of document.querySelectorAll("#switch [data-role]")) {
+    b.addEventListener("click", () => busy(null, "", () => switchRole(b.dataset.role)));
+  }
   $("signout").addEventListener("click", () => busy(null, "", async () => {
     await api.signOut();
     wallet.forget();
-    location.reload();
+    location.href = "/app.html";
   }));
-
-  $("open-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    busy(e.submitter, "Opening", () => attempt("Opened your vault", () =>
-      api.act(needsWallet(), { action: "open_vault", startInSecs: Number($("start-in").value), months: Number($("months").value) })));
-  });
-  $("save-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const amount = Number($("save-amt").value);
-    busy(e.submitter, "Saving", () => attempt(`Saved ${amount} USDC (matched by the foundation if under your cap)`, () =>
-      api.act(needsWallet(), { action: "save", amount })));
-  });
-  $("btn-employer").addEventListener("click", (e) => busy(e.currentTarget, "Paying", () =>
-    attempt("Employer paid 100 USDC (simulated payer)", () => api.topup("employer", 100))));
-  $("btn-family").addEventListener("click", (e) => busy(e.currentTarget, "Sending", () =>
-    attempt("Family sent 50 USDC (simulated payer)", () => api.topup("family", 50))));
-  $("btn-claim").addEventListener("click", (e) => {
-    const to = $("claim-to").value;
-    busy(e.currentTarget, "Asking the program", () => attempt(`Withdraw to ${to === "self" ? "your wallet" : "your family's wallet"}`, () =>
-      api.act(needsWallet(), { action: "claim", to })));
-  });
-  $("btn-copy").addEventListener("click", async () => {
-    const text = $("share-addr").textContent;
-    try {
-      await navigator.clipboard.writeText(text);
-      view.flash("Address copied.");
-    } catch {
-      const range = document.createRange();
-      range.selectNodeContents($("share-addr"));
-      getSelection().removeAllRanges();
-      getSelection().addRange(range);
-      view.flash("Address selected. Copy it with your keyboard.");
-    }
-  });
-  $("pay-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const amount = Number($("pay-amt").value);
-    const worker = $("pay-worker").value.trim();
-    busy(e.submitter, "Paying", () => attempt(`Paid ${amount} USDC into ${view.short(worker)}'s vault`, () =>
-      api.act(needsWallet(), { action: "pay", worker, amount })));
-  });
+  addEventListener("hashchange", () => go(location.hash.slice(1)));
+  document.addEventListener("dala:go", (e) => go(e.detail));
 }
 
 async function boot() {
@@ -181,13 +172,14 @@ async function boot() {
       ctx.wallet = wallet.restore(ctx.session.method);
       await enter();
     } else {
-      await refresh();
+      await welcome();
     }
   } catch (err) {
-    view.flash(err.message, true);
+    flash(err.message, true);
+    if (!ctx.session) showSignIn();
   }
-  setInterval(tick, 1000);
-  setInterval(() => { if (!document.hidden && !ctx.busy) refresh().catch(() => {}); }, 8000);
+  setInterval(() => { if (active) VIEWS[active.role].tick?.(helpers); }, 1000);
+  setInterval(() => { if (ctx.session && !document.hidden && !isBusy()) refresh().catch(() => {}); }, 8000);
 }
 
 boot();

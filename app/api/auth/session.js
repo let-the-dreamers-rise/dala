@@ -15,7 +15,7 @@ export default route(["GET", "POST", "DELETE"], async (body, req, res) => {
     return null;
   }
   rateLimit(req, "signin", 30, 10 * 60 * 1000);
-  if (!ROLES.includes(body.role)) throw new HttpError(400, "Choose worker or employer");
+  if (!ROLES.includes(body.role)) throw new HttpError(400, "Choose worker, employer or foundation");
   const method = METHODS.includes(body.method) ? body.method : "device";
   const sub = verifySignIn(body);
   setSession(res, { sub, role: body.role, method });

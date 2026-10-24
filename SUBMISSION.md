@@ -95,6 +95,8 @@ The program has 10 passing tests: 5 for the payout and matching maths, and 5 on-
 
 A full worker story ran on devnet: open vault, employer and family top-ups, two matched savings, three refused attacks, and two monthly payouts to her mother's wallet.
 
+The live web app has three workspaces on one passkey wallet. Workers get a step-by-step intro and checklist; employers get a roster, batch payroll and a contribution statement; foundations create and fund their own match pools and see every match. A public impact page and a read-only family passbook read straight from the chain.
+
 - **Source code:** https://github.com/let-the-dreamers-rise/dala
 - **Try it yourself (passkey sign-in, no SOL needed):** https://dala-puce.vercel.app/app.html
 - **Recorded run with every transaction:** https://dala-puce.vercel.app/story.html

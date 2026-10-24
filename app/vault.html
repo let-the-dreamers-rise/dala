@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dala Passbook</title>
+<meta name="description" content="A worker's Dala pension: balance, who paid in, and the payout schedule, read live from Solana devnet.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/brand/dala-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/css/workspace.css">
+<script type="module" src="/js/vault.js"></script>
+</head>
+<body>
+<header class="bar gutter">
+  <a class="logo" href="/" aria-label="Dala home"><img src="/brand/dala-logo.png" alt="" width="28" height="28">Dala</a>
+  <span class="net">Solana devnet</span>
+  <a class="btn small ghost push" href="/app.html">Open the app</a>
+</header>
+<main class="stage gutter" id="stage">
+  <p class="flash" id="flash" role="status" aria-live="polite" hidden></p>
+  <section class="card" id="pv" aria-live="polite">
+    <span class="eyebrow">Read-only passbook</span>
+    <h1 id="pv-title">Loading this pension...</h1>
+    <p class="fine" id="pv-who"></p>
+    <p class="big num" id="pv-total"></p>
+    <div id="pv-parts"></div>
+    <p class="clock" id="pv-clock" hidden></p>
+    <div class="periods" id="pv-chips"></div>
+    <p class="fine">This page can only show the vault. Nobody can move money with it. Numbers come straight from the Solana program.</p>
+  </section>
+  <section class="card">
+    <span class="eyebrow">History</span>
+    <h2>Who paid in, and what was paid out</h2>
+    <ul class="ledger" id="pv-ledger"><li class="empty">Loading...</li></ul>
+  </section>
+</main>
+</body>
+</html>

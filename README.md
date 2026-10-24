@@ -15,7 +15,7 @@ Submission for the SMU "From Vision to Impact: Building Web3 for Social Good 202
 |---|---|
 | `onchain/` | Anchor 1.2 workspace. Program in `onchain/programs/dala/src`, LiteSVM tests in `onchain/programs/dala/tests`. |
 | `demo/` | Node script that runs one worker's story on devnet and writes `app/demo.json`. |
-| `app/` | Static demo page. `build-page.mjs` inlines `demo.json` into `template.html`. |
+| `app/` | Vercel project. Landing page (`index.html`), the app (`app.html`, `js/`), a public passbook (`vault.html`), serverless API (`api/`, `lib/`), relayer tests (`tests/`), and the recorded run (`story.html`, built by `build-page.mjs`). |
 | `scripts/wsl-build.sh` | Syncs `onchain/` into WSL and builds, tests or deploys there. |
 
 ## Program
@@ -51,7 +51,13 @@ cd demo && npm install && WALLET=~/.config/solana/id.json OUT=../app/demo.json n
 node app/build-page.mjs
 ```
 
-The page is deployed from `app/` to Vercel as a static site:
+Relayer co-signing rules (no network needed):
+
+```bash
+cd app && npm test
+```
+
+The site and API are deployed from `app/` to Vercel. They need `RELAYER_SECRET` and `SESSION_SECRET` set in the project:
 
 ```bash
 cd app && vercel deploy --prod
